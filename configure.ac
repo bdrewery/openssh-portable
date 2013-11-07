@@ -1,4 +1,4 @@
-# $Id: configure.ac,v 1.536 2013/08/04 11:48:41 dtucker Exp $
+# $Id: configure.ac,v 1.539 2013/11/07 11:33:48 dtucker Exp $
 #
 # Copyright (c) 1999-2004 Damien Miller
 #
@@ -15,7 +15,7 @@
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 AC_INIT([OpenSSH], [Portable], [openssh-unix-dev@mindrot.org])
-AC_REVISION($Revision: 1.536 $)
+AC_REVISION($Revision: 1.539 $)
 AC_CONFIG_SRCDIR([ssh.c])
 AC_LANG([C])
 
@@ -1528,6 +1528,7 @@ dnl    Checks for library functions. Please keep in alphabetical order
 AC_CHECK_FUNCS([ \
 	arc4random \
 	arc4random_buf \
+	arc4random_stir \
 	arc4random_uniform \
 	asprintf \
 	b64_ntop \
@@ -2436,16 +2437,13 @@ fi
 AC_CHECK_FUNCS([crypt DES_crypt])
 
 # Search for SHA256 support in libc and/or OpenSSL
-AC_CHECK_FUNCS([SHA256_Update EVP_sha256],
-    [TEST_SSH_SHA256=yes],
-    [TEST_SSH_SHA256=no
-     unsupported_algorithms="$unsupported_algorithms \
+AC_CHECK_FUNCS([SHA256_Update EVP_sha256], ,
+    [unsupported_algorithms="$unsupported_algorithms \
 	hmac-sha2-256 hmac-sha2-512 \
 	diffie-hellman-group-exchange-sha256 \
 	hmac-sha2-256-etm@openssh.com hmac-sha2-512-etm@openssh.com"
      ]
 )
-AC_SUBST([TEST_SSH_SHA256])
 
 # Check complete ECC support in OpenSSL
 AC_MSG_CHECKING([whether OpenSSL has complete ECC support])
@@ -3136,6 +3134,11 @@ AC_CACHE_CHECK([for u_char], ac_cv_have_u_char, [
 if test "x$ac_cv_have_u_char" = "xyes" ; then
 	AC_DEFINE([HAVE_U_CHAR], [1], [define if you have u_char data type])
 fi
+
+AC_CHECK_TYPES([intmax_t, uintmax_t], , , [
+#include <sys/types.h>
+#include <stdint.h>
+])
 
 TYPE_SOCKLEN_T
 

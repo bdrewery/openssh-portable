@@ -1,3 +1,111 @@
+20131108
+ - (dtucker) OpenBSD CVS Sync
+    - dtucker@cvs.openbsd.org 2013/11/08 01:06:14
+      [regress/rekey.sh]
+      Rekey less frequently during tests to speed them up
+ - (djm) OpenBSD CVS Sync
+   - dtucker@cvs.openbsd.org 2013/11/07 11:58:27
+     [cipher.c cipher.h kex.c kex.h mac.c mac.h servconf.c ssh.c]
+     Output the effective values of Ciphers, MACs and KexAlgorithms when
+     the default has not been overridden.  ok markus@
+   - djm@cvs.openbsd.org 2013/11/08 00:39:15
+     [auth-options.c auth2-chall.c authfd.c channels.c cipher-3des1.c]
+     [clientloop.c gss-genr.c monitor_mm.c packet.c schnorr.c umac.c]
+     [sftp-client.c sftp-glob.c]
+     use calloc for all structure allocations; from markus@
+   - djm@cvs.openbsd.org 2013/11/08 01:38:11
+     [version.h]
+     openssh-6.4
+ - (djm) [README contrib/caldera/openssh.spec contrib/redhat/openssh.spec]
+   [contrib/suse/openssh.spec] Update version numbers following release.
+
+20131107
+ - (djm) [ssh-pkcs11.c] Bring back "non-constant initialiser" fix (rev 1.5)
+   that got lost in recent merge.
+ - (djm) [Makefile.in monitor.c] Missed chunks of curve25519 KEX diff
+ - (djm) [regress/modpipe.c regress/rekey.sh] Never intended to commit these
+ - (djm) [configure.ac defines.h] Skip arc4random_stir() calls on platforms
+   that lack it but have arc4random_uniform()
+ - (djm) OpenBSD CVS Sync
+   - markus@cvs.openbsd.org 2013/11/04 11:51:16
+     [monitor.c]
+     fix rekeying for KEX_C25519_SHA256; noted by dtucker@
+     RCSID sync only; I thought this was a merge botch and fixed it already
+   - markus@cvs.openbsd.org 2013/11/06 16:52:11
+     [monitor_wrap.c]
+     fix rekeying for AES-GCM modes; ok deraadt
+   - djm@cvs.openbsd.org 2013/11/06 23:05:59
+     [ssh-pkcs11.c]
+     from portable: s/true/true_val/ to avoid name collisions on dump platforms
+     RCSID sync only
+ - (dtucker) OpenBSD CVS Sync
+   - djm@cvs.openbsd.org 2013/10/09 23:44:14
+     [regress/Makefile] (ID sync only)
+     regression test for sftp request white/blacklisting and readonly mode.
+   - markus@cvs.openbsd.org 2013/11/02 22:39:53
+     [regress/kextype.sh]
+     add curve25519-sha256@libssh.org
+   - dtucker@cvs.openbsd.org 2013/11/04 12:27:42
+     [regress/rekey.sh]
+     Test rekeying with all KexAlgorithms.
+   - dtucker@cvs.openbsd.org 2013/11/07 00:12:05
+     [regress/rekey.sh]
+     Test rekeying for every Cipher, MAC and KEX, plus test every KEX with
+     the GCM ciphers.
+   - dtucker@cvs.openbsd.org 2013/11/07 01:12:51
+     [regress/rekey.sh]
+     Factor out the data transfer rekey tests
+   - dtucker@cvs.openbsd.org 2013/11/07 02:48:38
+     [regress/integrity.sh regress/cipher-speed.sh regress/try-ciphers.sh]
+     Use ssh -Q instead of hardcoding lists of ciphers or MACs.
+   - dtucker@cvs.openbsd.org 2013/11/07 03:55:41
+     [regress/kextype.sh]
+     Use ssh -Q to get kex types instead of a static list.
+   - dtucker@cvs.openbsd.org 2013/11/07 04:26:56
+     [regress/kextype.sh]
+     trailing space
+ - (dtucker) [Makefile.in configure.ac] Remove TEST_SSH_SHA256 environment
+   variable.  It's no longer used now that we get the supported MACs from
+   ssh -Q.
+
+20131104
+ - (djm) OpenBSD CVS Sync
+   - markus@cvs.openbsd.org 2013/11/02 20:03:54
+     [ssh-pkcs11.c]
+     support pkcs#11 tokes that only provide x509 zerts instead of raw pubkeys;
+     fixes bz#1908; based on patch from Laurent Barbe; ok djm
+   - markus@cvs.openbsd.org 2013/11/02 21:59:15
+     [kex.c kex.h myproposal.h ssh-keyscan.c sshconnect2.c sshd.c]
+     use curve25519 for default key exchange (curve25519-sha256@libssh.org);
+     initial patch from Aris Adamantiadis; ok djm@
+   - markus@cvs.openbsd.org 2013/11/02 22:10:15
+     [kexdhs.c kexecdhs.c]
+     no need to include monitor_wrap.h
+   - markus@cvs.openbsd.org 2013/11/02 22:24:24
+     [kexdhs.c kexecdhs.c]
+     no need to include ssh-gss.h
+   - markus@cvs.openbsd.org 2013/11/02 22:34:01
+     [auth-options.c]
+     no need to include monitor_wrap.h and ssh-gss.h
+   - markus@cvs.openbsd.org 2013/11/02 22:39:19
+     [ssh_config.5 sshd_config.5]
+     the default kex is now curve25519-sha256@libssh.org
+   - djm@cvs.openbsd.org 2013/11/03 10:37:19
+     [roaming_common.c]
+     fix a couple of function definitions foo() -> foo(void)
+     (-Wold-style-definition)
+ - (djm) [kexc25519.c kexc25519c.c kexc25519s.c] Import missed files from
+   KEX/curve25519 change
+
+20131103
+ - (dtucker) [openbsd-compat/bsd-misc.c] Include time.h for nanosleep.
+   From OpenSMTPD where it prevents "implicit declaration" warnings (it's
+   a no-op in OpenSSH).  From chl at openbsd.
+ - (dtucker) [openbsd-compat/setproctitle.c] Handle error case form the 2nd
+   vsnprintf.  From eric at openbsd via chl@.
+ - (dtucker) [configure.ac defines.h] Add typedefs for intmax_t and uintmax_t
+   for platforms that don't have them.
+
 20131030
  - (djm) OpenBSD CVS Sync
    - djm@cvs.openbsd.org 2013/10/29 09:42:11

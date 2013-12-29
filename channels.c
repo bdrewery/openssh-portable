@@ -1,4 +1,4 @@
-/* $OpenBSD: channels.c,v 1.326 2013/09/19 01:24:46 djm Exp $ */
+/* $OpenBSD: channels.c,v 1.328 2013/12/19 01:04:36 djm Exp $ */
 /*
  * Author: Tatu Ylonen <ylo@cs.hut.fi>
  * Copyright (c) 1995 Tatu Ylonen <ylo@cs.hut.fi>, Espoo, Finland
@@ -704,7 +704,7 @@ channel_register_status_confirm(int id, channel_confirm_cb *cb,
 	if ((c = channel_lookup(id)) == NULL)
 		fatal("channel_register_expect: %d: bad id", id);
 
-	cc = xmalloc(sizeof(*cc));
+	cc = xcalloc(1, sizeof(*cc));
 	cc->cb = cb;
 	cc->abandon_cb = abandon_cb;
 	cc->ctx = ctx;
@@ -1385,6 +1385,8 @@ port_open_helper(Channel *c, char *rtype)
 {
 	int direct;
 	char buf[1024];
+	char *local_ipaddr = get_local_ipaddr(c->sock);
+	int local_port = get_sock_port(c->sock, 1);
 	char *remote_ipaddr = get_peer_ipaddr(c->sock);
 	int remote_port = get_peer_port(c->sock);
 
@@ -1399,9 +1401,9 @@ port_open_helper(Channel *c, char *rtype)
 
 	snprintf(buf, sizeof buf,
 	    "%s: listening port %d for %.100s port %d, "
-	    "connect from %.200s port %d",
+	    "connect from %.200s port %d to %.100s port %d",
 	    rtype, c->listening_port, c->path, c->host_port,
-	    remote_ipaddr, remote_port);
+	    remote_ipaddr, remote_port, local_ipaddr, local_port);
 
 	free(c->remote_name);
 	c->remote_name = xstrdup(buf);
@@ -1419,7 +1421,7 @@ port_open_helper(Channel *c, char *rtype)
 		} else {
 			/* listen address, port */
 			packet_put_cstring(c->path);
-			packet_put_int(c->listening_port);
+			packet_put_int(local_port);
 		}
 		/* originator host and port */
 		packet_put_cstring(remote_ipaddr);
@@ -1436,6 +1438,7 @@ port_open_helper(Channel *c, char *rtype)
 		packet_send();
 	}
 	free(remote_ipaddr);
+	free(local_ipaddr);
 }
 
 static void

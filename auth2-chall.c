@@ -1,4 +1,4 @@
-/* $OpenBSD: auth2-chall.c,v 1.38 2013/05/17 00:13:13 djm Exp $ */
+/* $OpenBSD: auth2-chall.c,v 1.40 2014/01/31 16:39:19 tedu Exp $ */
 /*
  * Copyright (c) 2001 Markus Friedl.  All rights reserved.
  * Copyright (c) 2001 Per Allansson.  All rights reserved.
@@ -111,7 +111,7 @@ kbdint_alloc(const char *devs)
 		remove_kbdint_device("pam");
 #endif
 
-	kbdintctxt = xmalloc(sizeof(KbdintAuthctxt));
+	kbdintctxt = xcalloc(1, sizeof(KbdintAuthctxt));
 	if (strcmp(devs, "") == 0) {
 		buffer_init(&b);
 		for (i = 0; devices[i]; i++) {
@@ -148,7 +148,7 @@ kbdint_free(KbdintAuthctxt *kbdintctxt)
 	if (kbdintctxt->device)
 		kbdint_reset_device(kbdintctxt);
 	free(kbdintctxt->devices);
-	bzero(kbdintctxt, sizeof(*kbdintctxt));
+	explicit_bzero(kbdintctxt, sizeof(*kbdintctxt));
 	free(kbdintctxt);
 }
 /* get next device */
